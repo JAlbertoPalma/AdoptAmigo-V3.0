@@ -3,246 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADOPTAmigo V11.0 - Prototipo Final</title>
+    <title>ADOPTAmigo V4.0 - Premium Prototype</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f3f4f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .mobile-mockup { width: 375px; height: 812px; background: white; border-radius: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; position: relative; border: 8px solid #1f2937; }
-        #app-content { height: 100%; overflow-y: auto; padding-bottom: 80px; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        :root {
+            --primary: #ff4b91;
+            --primary-light: #ffebf3;
+            --secondary: #ff7676;
+            --dark: #1a1a1a;
+        }
+        body { 
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+        }
+        .mobile-mockup { 
+            width: 375px; height: 812px; 
+            background: #ffffff; border-radius: 50px; 
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.3); 
+            overflow: hidden; position: relative; 
+            border: 10px solid #1a1a1a; 
+        }
+        #app-content { height: 100%; overflow-y: auto; padding-bottom: 90px; scroll-behavior: smooth; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Glassmorphism Nav */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .chat-bubble-received { background-color: #f3f4f6; color: #1f2937; border-radius: 20px 20px 20px 4px; padding: 12px 16px; max-width: 80%; }
-        .chat-bubble-sent { background-color: #ec4899; color: white; border-radius: 20px 20px 4px 20px; padding: 12px 16px; max-width: 80%; align-self: flex-end; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 10px 20px -5px rgba(255, 75, 145, 0.4);
+        }
+        .match-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body>
 
 <div class="mobile-mockup">
-    <!-- BARRA DE ESTADO -->
-    <div class="flex justify-between items-center px-6 py-3 text-xs font-bold text-gray-800 bg-white/80 backdrop-blur-sm absolute w-full z-50 top-0 pointer-events-none">
+    <div class="flex justify-between items-center px-8 py-4 text-xs font-extrabold text-gray-900 bg-transparent absolute w-full z-50 top-0 pointer-events-none">
         <span>9:41</span>
-        <div class="flex space-x-2"><i class="fas fa-signal"></i><i class="fas fa-wifi"></i><i class="fas fa-battery-full"></i></div>
+        <div class="flex space-x-2 items-center">
+            <i class="fas fa-signal"></i>
+            <i class="fas fa-wifi"></i>
+            <div class="w-5 h-2.5 border border-black rounded-sm relative after:content-[''] after:absolute after:w-0.5 after:h-1 after:bg-black after:-right-1 after:top-0.5"></div>
+        </div>
     </div>
 
-    <!-- CONTENEDOR DE PANTALLAS -->
     <div id="app-content" class="hide-scrollbar"></div>
 
-    <!-- NAVEGACIÓN INFERIOR -->
-    <div id="bottom-nav" class="hidden absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-around py-4 px-6 pb-6 text-gray-400 z-50">
-        <i class="fas fa-home cursor-pointer transition nav-icon" id="nav-home" onclick="irAlMejorMatch()"></i>
-        <i class="fas fa-search cursor-pointer transition nav-icon" id="nav-search" onclick="navigate('searchScreen')"></i>
-        <i class="fas fa-heart cursor-pointer transition nav-icon" id="nav-status" onclick="navigate('statusScreen')"></i>
-        <i class="fas fa-user cursor-pointer transition nav-icon" id="nav-user" onclick="navigate('userProfile')"></i>
+    <div id="bottom-nav" class="hidden absolute bottom-0 w-full glass-nav flex justify-around py-5 px-6 pb-8 text-gray-400 z-50 rounded-t-[30px]">
+        <button class="nav-icon transition-all duration-300" id="nav-home" onclick="irAlMejorMatch()"><i class="fas fa-paw text-xl"></i></button>
+        <button class="nav-icon transition-all duration-300" id="nav-search" onclick="navigate('searchScreen')"><i class="fas fa-compass text-xl"></i></button>
+        <button class="nav-icon transition-all duration-300" id="nav-status" onclick="navigate('statusScreen')"><i class="fas fa-heart text-xl"></i></button>
+        <button class="nav-icon transition-all duration-300" id="nav-user" onclick="navigate('userProfile')"><i class="fas fa-user-circle text-xl"></i></button>
     </div>
 </div>
 
 <script>
-    /**************************************************************
-     * 1. BASE DE DATOS COMPLETA
-     **************************************************************/
     const db = {
         usuario: { 
-            nombre: "Joel Borbón", correo: "joel.borbon@ejemplo.com", 
-            foto: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80", 
-            estiloHogar: "Casa con Patio", nivelActividad: "Muy Activo", adopcionesActivas: [] 
+            nombre: "Ricardo López", 
+            correo: "usuario@ejemplo.com", 
+            foto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ77JAIz7LbMSooZVDp4ni_rDT4M0p35wwJg&s", 
+            presupuesto: "$1,500 - $2,500 MXN",
+            mascotasActuales: "1 (Gato)",
+            tiempoSolo: "4-6 horas",
+            adopcionesRealizadas: 0,
+            estiloHogar: "Casa con Patio",
+            nivelActividad: "Alto",
+            energiaBusqueda: "Media",
+            actividadFavorita: "Paseos tranquilos",
+            personalidadIdeal: "Cariñosa",
+            espacioDisponible: "Pequeño/Medio",
+            adopcionesActivas: [],
+            chats: {}
         },
+
         mascotas: [
             { 
-                id: 1, nombre: "Bruno", edad: "2 Años", peso: "14 kg", sexo: "Macho", especie: "Perro", 
-                refugio: "Refugio Esperanza", dueñoActual: "Ana", fotoDueño: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80", 
-                match: 95, historia: "Fui rescatado cerca del centro de Obregón tras una fuerte tormenta. Soy un explorador nato y muy leal.", 
-                datoDivertido: "Por inquieto me resbalé persiguiendo una mariposa dentro de casa. ¡Aún la busco!", 
+                id: 1, nombre: "Bruno", edad: "2 Años", peso: "14 kg", especie: "Perro", 
+                refugio: "Refugio Esperanza", dueñoActual: "Ana", 
+                match: 98, historia: "Fui rescatado cerca del centro de Obregón. Soy un explorador nato, leal y con una energía inagotable.", 
+                datoDivertido: "Me resbalé persiguiendo una mariposa dentro de casa. ¡Aún la busco!", 
                 foto: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
-                atributos: [{ icono: "fa-bolt", color: "yellow", texto: "Activo" }, { icono: "fa-paw", color: "purple", texto: "Sociable" }], 
-                medico: [{ estado: "Listo", icono: "fa-syringe text-green-500", texto: "Vacunas al día" }, { estado: "Listo", icono: "fa-scissors text-green-500", texto: "Esterilizado" }],
-                preguntasFormulario: ["¿Tu patio está bardeado?", "¿Paseo diario de 1 hora?"],
+                medico: [{ estado: "Listo", icono: "fa-syringe", texto: "Esquema completo", color: "text-green-500" }, { estado: "Listo", icono: "fa-check-double", texto: "Esterilizado", color: "text-green-500" }],
                 razonesMatch: ["Tu patio es ideal para mi energía.", "Tu estilo de vida activo encaja conmigo."],
                 escala3D: 1.0, color3D: 0x8B4513 
             },
             { 
-                id: 2, nombre: "Luna", edad: "6 Meses", peso: "3 kg", sexo: "Hembra", especie: "Gato", 
-                refugio: "Gatitos QRO", dueñoActual: "Carlos", fotoDueño: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80", 
-                match: 82, historia: "Me encontraron en un motor. Ronroneo mucho y me encantan las cajas.", 
+                id: 2, nombre: "Luna", edad: "6 Meses", peso: "3 kg", especie: "Gato", 
+                refugio: "Beltrones", dueñoActual: "Carlos", 
+                match: 85, historia: "Me encontraron en un motor. Ronroneo mucho y me encantan las cajas.", 
                 datoDivertido: "Le tengo miedo a mis propios estornudos.", 
                 foto: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
-                atributos: [{ icono: "fa-bed", color: "indigo", texto: "Tranquila" }], 
-                medico: [{ estado: "Listo", icono: "fa-syringe text-green-500", texto: "Triple Felina" }],
-                preguntasFormulario: ["¿Tienes otras mascotas?", "¿Será gatita de interiores?"],
+                medico: [{ estado: "Listo", icono: "fa-shield-cat", texto: "Triple Felina", color: "text-blue-500" }],
                 razonesMatch: ["Buscas compañía tranquila.", "Tu hogar es seguro para mí."],
                 escala3D: 0.5, color3D: 0xFFA500 
             },
             { 
-                id: 3, nombre: "Max", edad: "5 Años", peso: "35 kg", sexo: "Macho", especie: "Perro", 
-                refugio: "Grandes Amigos", dueñoActual: "Roberto", fotoDueño: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80", 
-                match: 75, historia: "Perro gigante que cree que es un cachorro faldero.", 
-                datoDivertido: "Ronco tan fuerte que parezco un motor viejo.", 
-                foto: "https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80", 
-                atributos: [{ icono: "fa-shield-dog", color: "gray", texto: "Protector" }], 
-                medico: [{ estado: "Pendiente", icono: "fa-tooth text-yellow-500", texto: "Limpieza Dental" }],
-                preguntasFormulario: ["¿Tienes barda de 2 metros?", "¿Puedes costear su dieta?"],
-                razonesMatch: ["Necesito espacio grande.", "Me encantaría cuidarte."],
-                escala3D: 1.6, color3D: 0x222222 
-            }
+                id: 3, nombre: "Chiwis", edad: "6 Años", peso: "3 kg", especie: "Perro", 
+                refugio: "Russo Voguel", dueñoActual: "Marisol Dominguez", 
+                match: 84, historia: "Soy una chihuahua muy bonita. He salido en películas como actriz canina.", 
+                datoDivertido: "Persigo mi cola muy seguido", 
+                foto: "https://i.scdn.co/image/ab6761610000e5eb7cae8a2297de0c5c247dcd0f", 
+                medico: [{ estado: "Listo", icono: "fa-syringe", texto: "Esquema completo", color: "text-green-500" }, { estado: "Listo", icono: "fa-check-double", texto: "Esterilizado", color: "text-green-500" }],
+                razonesMatch: ["Tu patio es perfecto por que gustan los lugares abiertos.", "Tu estilo de vida activo encaja conmigo."],
+                escala3D: 0.4, color3D: 0x8B4513 
+            },
         ]
     };
 
-    /**************************************************************
-     * 2. MOTOR 3D (AR)
-     **************************************************************/
     let currentAnimationId = null;
-    function init3DPet(petId) {
-        const container = document.getElementById('canvas-container');
-        if(!container) return;
-        container.innerHTML = ''; if(currentAnimationId) cancelAnimationFrame(currentAnimationId);
-        const pet = db.mascotas.find(p => p.id === petId);
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(50, container.clientWidth/container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 5, 12); camera.lookAt(0, 0, 0);
-        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.shadowMap.enabled = true; container.appendChild(renderer.domElement);
-        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8); dirLight.position.set(5, 10, 7); scene.add(dirLight);
-        const petGroup = new THREE.Group();
-        const mat = new THREE.MeshLambertMaterial({ color: pet.color3D });
-        const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.2, 2.5), mat); body.position.y = 0.6; petGroup.add(body);
-        const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), mat); head.position.set(0, 1.6, 1.5); petGroup.add(head);
-        for(let i=0; i<4; i++) {
-            const leg = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), mat);
-            leg.position.set((i%2===0)?0.5:-0.5, 0, (i<2)?1.0:-1.0); leg.geometry.translate(0, 0.6, 0); petGroup.add(leg);
-        }
-        petGroup.scale.set(pet.escala3D, pet.escala3D, pet.escala3D); petGroup.position.set(1, 0, 0); scene.add(petGroup);
-        const ruler = new THREE.Mesh(new THREE.BoxGeometry(3, 0.05, 0.3), new THREE.MeshLambertMaterial({ color: 0xeab308 }));
-        ruler.position.set(-2, 0.025, 0); scene.add(ruler);
-        function animate() { currentAnimationId = requestAnimationFrame(animate); petGroup.rotation.y += 0.01; renderer.render(scene, camera); }
-        animate();
-    }
 
-    /**************************************************************
-     * 3. VISTAS
-     **************************************************************/
     const views = {
         loginScreen: () => `
-            <div class="fade-in bg-white h-full flex flex-col justify-center px-10 relative">
-                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-pink-100 rounded-full blur-3xl opacity-50"></div>
-                <div class="text-center mb-12">
-                    <div class="w-20 h-20 bg-gray-900 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl"><i class="fas fa-paw text-4xl"></i></div>
-                    <h1 class="text-3xl font-black text-gray-900 tracking-tight">ADOPT<span class="text-pink-500">Amigo</span></h1>
+            <div class="fade-in h-full flex flex-col justify-center p-10 bg-white">
+                <div class="text-center mb-10">
+                    <div class="w-20 h-20 btn-primary text-white rounded-[28px] flex items-center justify-center mx-auto mb-6 rotate-12 shadow-xl">
+                        <i class="fas fa-paw text-4xl -rotate-12"></i>
+                    </div>
+                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tighter">ADOPT<span class="text-[#ff4b91]">Amigo</span></h1>
+                    <p class="text-gray-400 text-sm font-medium">Bienvenido de vuelta</p>
                 </div>
-                <button onclick="navigate('userForm')" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-lg transform transition active:scale-95">Iniciar Sesión</button>
+                
+                <div class="space-y-4">
+                    <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase block mb-1">Correo Electrónico</label>
+                        <input type="email" class="w-full bg-transparent text-sm font-bold focus:outline-none" placeholder="ejemplo@correo.com">
+                    </div>
+                    <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase block mb-1">Contraseña</label>
+                        <input type="password" class="w-full bg-transparent text-sm font-bold focus:outline-none" placeholder="••••••••">
+                    </div>
+                    <button onclick="navigate('userForm')" class="w-full btn-primary text-white py-5 rounded-2xl font-extrabold shadow-lg transition active:scale-95">Iniciar Sesión</button>
+                    
+                    <div class="relative py-4">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-100"></div></div>
+                        <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-300 font-bold">o</span></div>
+                    </div>
+                    
+                    <button class="w-full py-4 rounded-2xl font-extrabold text-gray-500 border-2 border-gray-100 hover:bg-gray-50 transition">Crear cuenta nueva</button>
+                </div>
             </div>
         `,
 
         userForm: () => `
-            <div class="fade-in pt-24 px-8 pb-20">
-                <h1 class="text-3xl font-bold text-gray-900 mb-4">Tu Perfil IA</h1>
-                <p class="text-sm text-gray-500 mb-8 leading-relaxed">Configura tus preferencias para que nuestro algoritmo encuentre a tu mascota ideal.</p>
-                <div class="space-y-6">
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-3 tracking-widest">Vivienda</label>
-                        <button class="w-full bg-blue-50 border-2 border-blue-500 text-blue-600 py-3 rounded-xl font-bold">Casa con Patio</button>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-3 tracking-widest">Actividad</label>
-                        <input type="range" class="w-full accent-pink-500" value="85">
-                    </div>
-                </div>
-                <button onclick="irAlMejorMatch()" class="w-full mt-10 bg-gradient-to-r from-pink-500 to-orange-400 text-white py-4 rounded-2xl font-bold shadow-xl">Calcular mi Match IA <i class="fas fa-sparkles ml-2"></i></button>
+    <div class="fade-in pt-20 px-8 pb-10 bg-white min-h-full">
+        <h1 class="text-3xl font-extrabold text-gray-900 leading-tight mb-2">Tu Match <br><span class="text-[#ff4b91]">Ideal</span></h1>
+        <p class="text-gray-400 text-xs font-medium mb-8">Personaliza la búsqueda según tu ritmo de vida.</p>
+        
+        <div class="space-y-5">
+            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Nivel de energía deseado</label>
+                <select id="input-energia" class="w-full bg-transparent font-bold text-sm focus:outline-none appearance-none">
+                    <option value="Baja (Tranquilo/Sillón)">Baja (Tranquilo / Sofá)</option>
+                    <option value="Media (Caminatas diarias)" selected>Media (Caminatas diarias)</option>
+                    <option value="Alta (Para correr/deporte)">Alta (Para correr / Deporte)</option>
+                </select>
             </div>
-        `,
+
+            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Actividad principal juntos</label>
+                <select id="input-actividad" class="w-full bg-transparent font-bold text-sm focus:outline-none appearance-none">
+                    <option value="Ver películas/Estar en casa">Ver películas / Estar en casa</option>
+                    <option value="Explorar parques">Explorar parques</option>
+                    <option value="Senderismo/Running">Senderismo / Running</option>
+                </select>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <label class="text-[10px] font-extrabold text-gray-400 uppercase block mb-1">Personalidad de la mascota</label>
+                <select id="input-personalidad" class="w-full bg-transparent font-bold text-sm focus:outline-none appearance-none">
+                    <option value="Independiente">Independiente (A su aire)</option>
+                    <option value="Muy Cariñosa" selected>Muy Cariñosa (Pegajosa)</option>
+                    <option value="Protectora/Alerta">Protectora / Alerta</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <label class="text-[9px] font-extrabold text-gray-400 uppercase block mb-1">Presupuesto</label>
+                    <select id="input-presupuesto" class="w-full bg-transparent font-bold text-[11px] focus:outline-none appearance-none">
+                        <option value="$1k - $2k">$1k - $2k</option>
+                        <option value="$3k+">$3k+</option>
+                    </select>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <label class="text-[9px] font-extrabold text-gray-400 uppercase block mb-1">Vivienda</label>
+                    <select id="input-vivienda" class="w-full bg-transparent font-bold text-[11px] focus:outline-none appearance-none">
+                        <option value="Departamento">Depto</option>
+                        <option value="Casa Patio" selected>Casa Patio</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="guardarPerfilYAnalizar()" class="w-full btn-primary text-white py-5 rounded-2xl font-extrabold shadow-xl mt-4 flex items-center justify-center space-x-3 transition active:scale-95">
+                <span>Encontrar mi compañero</span>
+                <i class="fas fa-wand-magic-sparkles"></i>
+            </button>
+        </div>
+    </div>`,
 
         petProfile: (petId) => {
             const pet = db.mascotas.find(p => p.id === petId);
             return `
-            <div class="fade-in bg-gray-50 pb-24">
-                <div class="relative h-96">
+            <div class="fade-in bg-white pb-32">
+                <div class="relative h-[450px]">
                     <img src="${pet.foto}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 right-6 flex justify-between items-end text-white">
-                        <div><h1 class="text-4xl font-black">${pet.nombre}</h1><p class="text-sm font-medium opacity-80">${pet.refugio}</p></div>
-                        <button onclick="navigate('arScreen', ${pet.id})" class="bg-white/20 p-4 rounded-full border border-white/40"><i class="fa-solid fa-vr-cardboard text-2xl"></i></button>
+                    <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-black/20"></div>
+                    <button onclick="navigate('searchScreen')" class="absolute top-14 left-6 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/30 flex items-center justify-center">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="absolute bottom-10 left-8 right-8">
+                        <div class="match-badge inline-flex items-center px-4 py-1.5 rounded-full text-white text-xs font-bold mb-3">
+                            <i class="fas fa-sparkles mr-2 text-yellow-300"></i> ${pet.match}% Match IA
+                        </div>
+                        <h1 class="text-5xl font-extrabold text-gray-900 tracking-tighter">${pet.nombre}</h1>
+                        <p class="text-gray-600 font-semibold flex items-center mt-1">
+                            <i class="fas fa-location-dot mr-2 text-[#ff4b91]"></i> ${pet.refugio}
+                        </p>
                     </div>
                 </div>
-                <div class="px-6 -mt-6 relative z-10">
-                    <!-- Cards de Info -->
-                    <div class="bg-white p-5 rounded-3xl shadow-xl flex justify-between mb-6 text-center">
-                        <div class="w-1/3 border-r"><p class="text-[10px] font-bold text-gray-400 uppercase">Match IA</p><p class="font-black text-pink-500">${pet.match}%</p></div>
-                        <div class="w-1/3 border-r"><p class="text-[10px] font-bold text-gray-400 uppercase">Edad</p><p class="font-black">${pet.edad}</p></div>
-                        <div class="w-1/3"><p class="text-[10px] font-bold text-gray-400 uppercase">Peso</p><p class="font-black">${pet.peso}</p></div>
+
+                <div class="px-8 -mt-5 relative z-10">
+                    <div class="grid grid-cols-3 gap-4 mb-8">
+                        <div class="bg-gray-50 p-4 rounded-3xl border border-gray-100 text-center">
+                            <p class="text-[9px] font-extrabold text-gray-400 uppercase">Edad</p>
+                            <p class="font-extrabold text-gray-900">${pet.edad}</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-3xl border border-gray-100 text-center">
+                            <p class="text-[9px] font-extrabold text-gray-400 uppercase">Peso</p>
+                            <p class="font-extrabold text-gray-900">${pet.peso}</p>
+                        </div>
+                        <button onclick="navigate('arScreen', ${pet.id})" class="bg-pink-50 p-4 rounded-3xl border border-pink-100 text-center transition active:scale-95">
+                            <i class="fas fa-vr-cardboard text-[#ff4b91] text-xl"></i>
+                            <p class="text-[9px] font-extrabold text-[#ff4b91] uppercase mt-1">Ver AR</p>
+                        </button>
                     </div>
 
-                    <!-- Dato Divertido -->
-                    <div class="bg-yellow-50 p-5 rounded-2xl mb-6 border border-yellow-200 relative">
-                        <h3 class="font-bold text-yellow-800 mb-1 text-sm"><i class="fas fa-star mr-2"></i> Algo divertido de mí...</h3>
-                        <p class="text-sm text-yellow-700 font-medium italic">"${pet.datoDivertido}"</p>
+                    <div class="mb-8">
+                        <h3 class="text-lg font-extrabold text-gray-900 mb-3 font-jakarta">Su Historia</h3>
+                        <p class="text-gray-500 leading-relaxed text-sm font-medium">${pet.historia}</p>
                     </div>
 
-                    <!-- Historia -->
-                    <h3 class="font-bold text-lg text-gray-900 mb-2">Mi Historia</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed mb-6 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">${pet.historia}</p>
-
-                    <!-- Carnet de Salud -->
-                    <h3 class="font-bold text-lg text-gray-900 mb-3 flex justify-between items-center">Salud y Cuidados <span class="text-[8px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded">BLOCKCHAIN VERIFIED</span></h3>
-                    <div class="bg-white rounded-2xl border p-2 mb-8">
-                        ${pet.medico.map(m=>`<div class="flex items-center justify-between p-3 border-b last:border-0"><div class="flex items-center text-xs font-bold"><i class="fas ${m.icono} mr-3"></i> ${m.texto}</div><span class="text-[10px] text-green-600 font-bold">${m.estado}</span></div>`).join('')}
-                    </div>
-
-                    <!-- Match IA Card -->
-                    <div class="bg-gray-900 rounded-3xl p-6 text-white shadow-xl mb-8">
-                        <h3 class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-orange-400 mb-4 text-xl">¿Por qué haríamos equipo?</h3>
-                        <ul class="space-y-3 text-sm text-gray-300">
-                            ${pet.razonesMatch.map(r=>`<li class="flex items-start"><i class="fas fa-check-circle text-green-400 mt-1 mr-3"></i> ${r}</li>`).join('')}
+                    <div class="bg-gray-900 rounded-[32px] p-7 text-white shadow-2xl mb-8 relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-[#ff4b91] blur-[50px] opacity-40"></div>
+                        <h3 class="font-extrabold text-xl mb-4 text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-orange-300">¿Por qué es para ti?</h3>
+                        <ul class="space-y-4">
+                            ${pet.razonesMatch.map(r=>`<li class="flex items-start text-sm font-medium text-gray-300"><i class="fas fa-check-circle text-green-400 mt-1 mr-3"></i> ${r}</li>`).join('')}
                         </ul>
                     </div>
 
-                    <!-- Botones de Acción -->
-                    <div class="flex space-x-4 mb-10">
-                        <button onclick="rechazarMascota(${pet.id})" class="bg-white border text-gray-300 p-5 rounded-2xl hover:text-red-500 transition shadow-sm"><i class="fas fa-times text-2xl"></i></button>
-                        <button onclick="navigate('adoptionFormScreen', ${pet.id})" class="flex-1 bg-pink-500 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-pink-600">ADOPTAR <i class="fas fa-paw ml-2"></i></button>
+                    <div class="mb-10">
+                        <h3 class="text-lg font-extrabold text-gray-900 mb-4">Salud y Certificados</h3>
+                        <div class="space-y-3">
+                            ${pet.medico.map(m=>`
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm mr-4">
+                                            <i class="fas ${m.icono} ${m.color}"></i>
+                                        </div>
+                                        <span class="text-sm font-bold text-gray-700">${m.texto}</span>
+                                    </div>
+                                    <span class="text-[10px] font-extrabold text-green-500 bg-green-50 px-3 py-1 rounded-full uppercase">Verificado</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button onclick="rechazarMascota(${pet.id})" class="w-20 h-16 bg-gray-100 rounded-2xl text-gray-400 flex items-center justify-center transition active:scale-90"><i class="fas fa-times text-2xl"></i></button>
+                        <button onclick="navigate('adoptionFormScreen', ${pet.id})" class="flex-1 btn-primary text-white font-extrabold rounded-2xl shadow-xl transition active:scale-95">ADOPTAR AHORA</button>
+                    </div>
+                </div>
+            </div>`;
+        },
+
+        adoptionFormScreen: (petId) => {
+            const pet = db.mascotas.find(p => p.id === petId);
+            return `
+            <div class="fade-in pt-20 px-8 pb-10 bg-white">
+                <button onclick="navigate('petProfile', ${petId})" class="mb-4 text-gray-400 font-bold text-xs flex items-center"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
+                <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Proceso de Adopción</h2>
+                
+                <div class="space-y-6">
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-extrabold text-[#ff4b91] uppercase tracking-widest">Preguntas de ${pet.dueñoActual}</h3>
+                        <div class="bg-gray-50 p-5 rounded-[24px] border border-gray-100 space-y-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-600 block mb-2">¿Cuentas con un veterinario de confianza cerca?</label>
+                                <input type="text" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs focus:outline-none" placeholder="Nombre de la clínica...">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-600 block mb-2">¿Quién cuidará de ${pet.nombre} si sales de viaje?</label>
+                                <textarea class="w-full bg-white border border-gray-200 rounded-xl p-3 text-xs focus:outline-none h-16" placeholder="Cuéntanos tu plan..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-extrabold text-gray-900 uppercase tracking-widest">Verificación de Identidad</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="border-2 border-dashed border-gray-200 rounded-2xl p-4 text-center cursor-pointer hover:bg-gray-50 transition">
+                                <i class="fas fa-id-card text-gray-300 text-xl mb-2"></i>
+                                <p class="text-[9px] font-extrabold text-gray-400 uppercase">Identificación (INE/Pasaporte)</p>
+                            </div>
+                            <div class="border-2 border-dashed border-gray-200 rounded-2xl p-4 text-center cursor-pointer hover:bg-gray-50 transition">
+                                <i class="fas fa-file-invoice text-gray-300 text-xl mb-2"></i>
+                                <p class="text-[9px] font-extrabold text-gray-400 uppercase">Comprobante Domicilio</p>
+                            </div>
+                        </div>
+                        <p class="text-[9px] text-gray-400 font-medium text-center"><i class="fas fa-shield-halved mr-1"></i> Tus datos están protegidos por encriptación de extremo a extremo.</p>
+                    </div>
+
+                    <button onclick="enviarSolicitud(${petId})" class="w-full btn-primary text-white py-5 rounded-2xl font-extrabold shadow-xl mt-4 transition active:scale-95">Finalizar y Enviar Solicitud</button>
+                </div>
+            </div>`;
+        },
+
+        chatScreen: (petId) => {
+            const pet = db.mascotas.find(p => p.id === petId);
+            return `
+            <div class="fade-in h-full flex flex-col bg-gray-50">
+                <div class="pt-14 pb-4 px-6 bg-white flex items-center shadow-sm">
+                    <button onclick="navigate('statusScreen')" class="mr-4 text-gray-400"><i class="fas fa-chevron-left text-xl"></i></button>
+                    <img src="${pet.foto}" class="w-10 h-10 rounded-full object-cover mr-3">
+                    <div>
+                        <h4 class="font-extrabold text-sm text-gray-900">${pet.dueñoActual}</h4>
+                        <p class="text-[10px] text-green-500 font-bold uppercase">En línea ahora</p>
+                    </div>
+                </div>
+
+                <div class="flex-1 p-6 space-y-4 overflow-y-auto" id="chat-messages">
+                    <div class="flex justify-start">
+                        <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[80%]">
+                            <p class="text-sm font-medium text-gray-600 italic">¡Hola! He recibido tu solicitud para adoptar a ${pet.nombre}. Revisaré tu perfil y te contactaré pronto.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 pb-10 bg-white">
+                    <div class="flex items-center bg-gray-100 rounded-2xl px-4 py-2">
+                        <input type="text" placeholder="Escribe un mensaje..." class="flex-1 bg-transparent py-2 text-sm focus:outline-none font-medium">
+                        <button class="text-[#ff4b91] ml-2"><i class="fas fa-paper-plane text-xl"></i></button>
                     </div>
                 </div>
             </div>`;
         },
 
         arScreen: (id) => `
-            <div class="fade-in bg-gray-900 h-full relative">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
+            <div class="fade-in bg-black h-full relative">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center opacity-60"></div>
                 <div id="canvas-container" class="absolute inset-0 z-10"></div>
-                <button onclick="navigate('petProfile', ${id})" class="absolute top-12 left-6 z-20 bg-black/40 p-3 rounded-full text-white border"><i class="fas fa-chevron-left"></i></button>
-                <div class="absolute bottom-10 left-6 right-6 z-20 text-center"><span class="bg-black/60 text-white text-[10px] font-bold px-4 py-2 rounded-full border">Referencia: Regla 30cm sobre suelo real</span></div>
+                <button onclick="navigate('petProfile', ${id})" class="absolute top-14 left-6 z-20 w-12 h-12 bg-black/40 backdrop-blur-md rounded-full text-white border border-white/20 flex items-center justify-center"><i class="fas fa-times"></i></button>
+                <div class="absolute bottom-12 left-8 right-8 z-20">
+                    <div class="bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-[24px] text-center">
+                        <p class="text-white font-bold text-sm mb-1">Modo Visualización Real</p>
+                        <p class="text-white/60 text-[10px]">Utiliza el suelo como referencia de tamaño (Regla de 30cm incluida)</p>
+                    </div>
+                </div>
             </div>`,
 
         searchScreen: (f='Todos') => {
             let m=db.mascotas; if(f==='Perros') m=m.filter(p=>p.especie==='Perro'); if(f==='Gatos') m=m.filter(p=>p.especie==='Gato');
-            return `<div class="fade-in pt-16 px-6 bg-gray-50 min-h-full pb-24"><h2 class="text-2xl font-black mb-6">Explorar</h2>
-                <div class="flex space-x-2 mb-6">${['Todos','Perros','Gatos'].map(x=>`<button onclick="navigate('searchScreen','${x}')" class="${f===x?'bg-gray-900 text-white':'bg-white text-gray-500 border'} px-5 py-2 rounded-full text-xs font-bold">${x}</button>`).join('')}</div>
-                ${m.map(p=>`<div onclick="navigate('petProfile', ${p.id})" class="bg-white p-3 rounded-2xl border mb-4 flex items-center cursor-pointer"><img src="${p.foto}" class="w-16 h-16 rounded-xl object-cover mr-4"><div class="flex-1"><div class="flex justify-between"><h3 class="font-bold text-sm">${p.nombre}</h3><span class="text-pink-500 font-black text-xs">${p.match}%</span></div><p class="text-[10px] text-gray-400">${p.especie} • ${p.edad}</p></div></div>`).join('')}</div>`;
+            return `<div class="fade-in pt-20 px-8 bg-white min-h-full">
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-6">Explorar</h2>
+                <div class="flex space-x-3 mb-8 overflow-x-auto hide-scrollbar">
+                    ${['Todos','Perros','Gatos'].map(x=>`<button onclick="navigate('searchScreen','${x}')" class="px-6 py-2.5 rounded-full text-xs font-extrabold whitespace-nowrap transition-all ${f===x?'btn-primary text-white':'bg-gray-100 text-gray-400'}">${x.toUpperCase()}</button>`).join('')}
+                </div>
+                <div class="space-y-6">
+                    ${m.map(p=>`
+                        <div onclick="navigate('petProfile', ${p.id})" class="relative group cursor-pointer">
+                            <img src="${p.foto}" class="w-full h-48 rounded-[32px] object-cover shadow-lg">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent rounded-[32px]"></div>
+                            <div class="absolute bottom-5 left-6 right-6 flex justify-between items-end">
+                                <div>
+                                    <h3 class="text-white font-extrabold text-xl">${p.nombre}</h3>
+                                    <p class="text-white/70 text-xs font-bold">${p.especie} • ${p.edad}</p>
+                                </div>
+                                <div class="bg-[#ff4b91] text-white px-3 py-1 rounded-full text-[10px] font-extrabold">${p.match}% MATCH</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
         },
 
-        adoptionFormScreen: (id) => {
-            const pet = db.mascotas.find(p=>p.id===id);
-            return `<div class="fade-in pt-16 px-8 h-full bg-white"><div class="flex items-center mb-10"><button onclick="navigate('petProfile', ${id})" class="mr-4"><i class="fas fa-arrow-left"></i></button><h2 class="text-xl font-bold">Solicitud</h2></div>
-                <div class="bg-blue-50 p-5 rounded-3xl border border-blue-100 flex items-center mb-8"><img src="${pet.fotoDueño}" class="w-10 h-10 rounded-full mr-4"><p class="text-xs font-bold text-blue-700">${pet.dueñoActual} evaluará tu perfil.</p></div>
-                ${pet.preguntasFormulario.map((q,i)=>`<div class="mb-6"><p class="text-sm font-bold mb-3">${i+1}. ${q}</p><button class="w-full bg-gray-50 border p-3 rounded-xl text-left text-xs text-gray-500 font-bold"><i class="fas fa-check-circle mr-2 text-green-500"></i> Sí, me comprometo</button></div>`).join('')}
-                <button onclick="confirmar(${id})" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold mt-4 shadow-xl">Enviar a ${pet.dueñoActual}</button></div>`;
-        },
+        statusScreen: () => `
+            <div class="fade-in pt-20 px-8 h-full bg-white">
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-8">Mis Procesos</h2>
+                ${db.usuario.adopcionesActivas.length ? db.usuario.adopcionesActivas.map(a=>{
+                    const p=db.mascotas.find(x=>x.id===a.idMascota); 
+                    return `
+                    <div class="bg-gray-50 rounded-[32px] p-6 border border-gray-100 mb-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center">
+                                <img src="${p.foto}" class="w-14 h-14 rounded-2xl object-cover mr-4 shadow-md">
+                                <div>
+                                    <h3 class="font-extrabold text-gray-900">${p.nombre}</h3>
+                                    <p class="text-[10px] font-bold text-[#ff4b91] uppercase tracking-tighter">En Revisión</p>
+                                </div>
+                            </div>
+                            <button onclick="navigate('chatScreen', ${p.id})" class="w-12 h-12 bg-white rounded-2xl shadow-sm text-[#ff4b91] flex items-center justify-center border border-pink-50"><i class="fas fa-comment-dots text-xl"></i></button>
+                        </div>
+                        <div class="relative pl-6 space-y-8 before:absolute before:left-[11px] before:top-2 before:h-[80%] before:w-[2px] before:bg-pink-100">
+                            <div class="relative flex items-center">
+                                <div class="absolute left-[-20px] h-3 w-3 rounded-full bg-[#ff4b91] ring-4 ring-pink-50"></div>
+                                <span class="text-xs font-bold text-gray-400">Formulario Enviado</span>
+                            </div>
+                            <div class="relative flex items-center">
+                                <div class="absolute left-[-22px] h-4 w-4 rounded-full bg-white border-4 border-[#ff4b91] animate-pulse"></div>
+                                <span class="text-xs font-extrabold text-gray-900">Validación de Perfil IA</span>
+                            </div>
+                        </div>
+                    </div>`
+                }).join('') : `
+                <div class="text-center py-20">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-200"><i class="fas fa-heart-circle-xmark text-4xl"></i></div>
+                    <p class="text-gray-400 font-bold text-sm">No tienes solicitudes activas</p>
+                </div>`}
+            </div>`,
 
-        statusScreen: () => `<div class="fade-in pt-16 px-6 h-full bg-white pb-24"><h2 class="text-2xl font-black mb-6">Mis Adopciones</h2>${db.usuario.adopcionesActivas.length ? db.usuario.adopcionesActivas.map(a=>{const p=db.mascotas.find(x=>x.id===a.idMascota); return `<div class="bg-pink-50 p-4 rounded-2xl border border-pink-100 flex items-center justify-between mb-8 shadow-sm"><div class="flex items-center"><img src="${p.foto}" class="w-14 h-14 rounded-full mr-4 border-4 border-white"><h3 class="font-black">${p.nombre}</h3></div><button onclick="navigate('chatScreen', ${p.id})" class="text-pink-500 p-3 bg-white rounded-full shadow-sm"><i class="fas fa-comment"></i></button></div><div class="relative pl-8 space-y-10 before:absolute before:inset-0 before:ml-10 before:h-full before:w-0.5 before:bg-gray-100"><div class="relative flex items-center"><div class="absolute left-0 -ml-3 h-6 w-6 rounded-full bg-pink-500 border-4 border-white"></div><h4 class="font-bold text-sm ml-8">Formulario Enviado</h4></div><div class="relative flex items-center"><div class="absolute left-0 -ml-4 h-8 w-8 rounded-full bg-white border-4 border-pink-500 flex items-center justify-center animate-pulse"><div class="w-2 h-2 bg-pink-500 rounded-full"></div></div><h4 class="font-bold text-sm ml-8 text-pink-600">Entrevista / Chat</h4></div></div>`}).join('') : '<p class="text-center text-gray-400 py-20">No hay procesos activos.</p>'}</div>`,
+        userProfile: () => `
+    <div class="fade-in pt-20 px-8 pb-10 bg-white min-h-full">
+        <div class="flex items-center space-x-4 mb-8">
+            <img src="${db.usuario.foto}" class="w-16 h-16 rounded-2xl object-cover shadow-lg">
+            <div>
+                <h2 class="text-xl font-extrabold text-gray-900">${db.usuario.nombre}</h2>
+                <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Nivel Pro Adoptante</p>
+            </div>
+        </div>
 
-        chatScreen: (id) => `<div class="fade-in h-full flex flex-col"><div class="pt-12 pb-4 px-6 border-b flex items-center"><button onclick="navigate('statusScreen')" class="mr-4 text-gray-400"><i class="fas fa-arrow-left"></i></button><h2 class="font-bold">Chat Directo</h2></div><div class="flex-1 p-6 bg-gray-50"><div class="chat-bubble-received text-sm mb-4 font-medium">¡Hola Joel! Tu perfil de IA es impresionante. ¿Hacemos videollamada para conocer a la mascota?</div></div><div class="p-6 border-t pb-10"><input type="text" placeholder="Escribe..." class="w-full bg-gray-100 p-4 rounded-full text-sm outline-none" disabled></div></div>`,
+        <div class="space-y-6">
+            <div class="bg-gray-900 rounded-[32px] p-6 text-white shadow-2xl relative overflow-hidden">
+                <div class="absolute right-0 top-0 p-4 opacity-10 text-5xl"><i class="fas fa-bolt"></i></div>
+                <h3 class="text-[10px] font-extrabold text-[#ff4b91] uppercase tracking-[0.2em] mb-4">Busco una mascota...</h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span class="text-xs text-gray-400">Energía:</span>
+                        <span class="text-xs font-bold">${db.usuario.energiaBusqueda}</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span class="text-xs text-gray-400">Actividad:</span>
+                        <span class="text-xs font-bold">${db.usuario.actividadFavorita}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400">Carácter:</span>
+                        <span class="text-xs font-bold">${db.usuario.personalidadIdeal}</span>
+                    </div>
+                </div>
+            </div>
 
-        userProfile: () => `<div class="fade-in pt-16 px-8 text-center h-full flex flex-col justify-center"><img src="${db.usuario.foto}" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-white shadow-xl"><h2 class="text-2xl font-black">${db.usuario.nombre}</h2><p class="text-gray-400 mb-10">${db.usuario.correo}</p><div class="bg-gray-50 p-6 rounded-3xl text-left border mb-10"><p class="text-[10px] font-bold text-gray-400 uppercase mb-4">Ajustes de IA</p><div class="flex justify-between text-sm mb-2"><span>Hogar</span><span class="font-bold">${db.usuario.estiloHogar}</span></div><div class="flex justify-between text-sm"><span>Actividad</span><span class="font-bold">${db.usuario.nivelActividad}</span></div></div><button onclick="navigate('loginScreen')" class="w-full bg-red-50 text-red-600 py-4 rounded-2xl font-bold border border-red-100 shadow-sm">Cerrar Sesión</button></div>`,
-        
-        noMorePetsScreen: () => `<div class="fade-in pt-32 px-10 text-center"><div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6"><i class="fas fa-search text-4xl text-gray-300"></i></div><h2 class="text-2xl font-bold mb-4">Fin de la Búsqueda</h2><p class="text-gray-500 text-sm mb-12">Has visto todas las mascotas. Intenta cambiar tu estilo de vida para ver nuevos resultados.</p><button onclick="navigate('searchScreen')" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-lg">Reiniciar Exploración</button></div>`
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-50 p-4 rounded-3xl border border-gray-100">
+                    <p class="text-[10px] font-extrabold text-gray-400 uppercase">Hogar</p>
+                    <p class="text-xs font-bold text-gray-900">${db.usuario.estiloHogar}</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-3xl border border-gray-100">
+                    <p class="text-[10px] font-extrabold text-gray-400 uppercase">Presupuesto</p>
+                    <p class="text-xs font-bold text-gray-900">${db.usuario.presupuesto}</p>
+                </div>
+            </div>
+
+            <button onclick="navigate('loginScreen')" class="w-full py-5 rounded-2xl font-extrabold text-red-500 bg-red-50 transition active:scale-95">Cerrar Sesión</button>
+        </div>
+    </div>`,
     };
 
     /**************************************************************
-     * 4. CONTROLADOR
+     * CONTROLADOR Y LÓGICA
      **************************************************************/
+    function navigate(view, data=null) {
+        const app=document.getElementById('app-content'), nav=document.getElementById('bottom-nav');
+        
+        // Mostrar/Ocultar Nav
+        if(['loginScreen','userForm','arScreen'].includes(view)) nav.classList.add('hidden'); 
+        else nav.classList.remove('hidden');
+
+        if(currentAnimationId) { cancelAnimationFrame(currentAnimationId); currentAnimationId=null; }
+        
+        // Actualizar iconos Nav
+        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('text-[#ff4b91]', 'scale-125'));
+        if(['petProfile','noMorePetsScreen'].includes(view)) document.getElementById('nav-home').classList.add('text-[#ff4b91]', 'scale-125');
+        if(view==='searchScreen') document.getElementById('nav-search').classList.add('text-[#ff4b91]', 'scale-125');
+        if(view==='statusScreen' || view==='chatScreen') document.getElementById('nav-status').classList.add('text-[#ff4b91]', 'scale-125');
+        if(view==='userProfile') document.getElementById('nav-user').classList.add('text-[#ff4b91]', 'scale-125');
+
+        app.innerHTML = '';
+        setTimeout(() => { 
+            if(views[view]) { 
+                app.innerHTML=views[view](data); 
+                if(view==='arScreen') init3DPet(data); 
+            } 
+        }, 50);
+    }
+
+    function guardarPerfilYAnalizar() {
+    db.usuario.energiaBusqueda = document.getElementById('input-energia').value;
+    db.usuario.actividadFavorita = document.getElementById('input-actividad').value;
+    db.usuario.personalidadIdeal = document.getElementById('input-personalidad').value;
+    
+    db.usuario.presupuesto = document.getElementById('input-presupuesto').value;
+    db.usuario.estiloHogar = document.getElementById('input-vivienda').value;
+
+    irAlMejorMatch();
+}
+
     function irAlMejorMatch() {
         const sorted = [...db.mascotas].sort((a,b)=>b.match - a.match);
         navigate('petProfile', sorted[0].id);
@@ -252,29 +536,81 @@
         const sorted = [...db.mascotas].sort((a,b)=>b.match - a.match);
         const idx = sorted.findIndex(p=>p.id === id);
         if(idx + 1 < sorted.length) navigate('petProfile', sorted[idx+1].id);
-        else navigate('noMorePetsScreen');
+        else navigate('searchScreen');
     }
 
-    function confirmar(id) {
-        if(!db.usuario.adopcionesActivas.find(a=>a.idMascota===id)) db.usuario.adopcionesActivas.push({idMascota: id});
-        alert("Solicitud enviada. El dueño revisará tu Match de IA.");
-        navigate('chatScreen', id);
-    }
-
-    function navigate(view, data=null) {
-        const app=document.getElementById('app-content'), nav=document.getElementById('bottom-nav');
-        if(['loginScreen','userForm','chatScreen','arScreen','adoptionFormScreen'].includes(view)) nav.classList.add('hidden'); else nav.classList.remove('hidden');
-        if(currentAnimationId) { cancelAnimationFrame(currentAnimationId); currentAnimationId=null; }
+    /**************************************************************
+     * MOTOR 3D REFINADO
+     **************************************************************/
+    function init3DPet(petId) {
+        const container = document.getElementById('canvas-container');
+        if(!container) return;
+        const pet = db.mascotas.find(p => p.id === petId);
         
-        document.querySelectorAll('.nav-icon').forEach(i => i.classList.replace('text-pink-500', 'text-gray-400'));
-        if(view==='petProfile') document.getElementById('nav-home').classList.replace('text-gray-400', 'text-pink-500');
-        if(view==='searchScreen') document.getElementById('nav-search').classList.replace('text-gray-400', 'text-pink-500');
-        if(view==='statusScreen') document.getElementById('nav-status').classList.replace('text-gray-400', 'text-pink-500');
-        if(view==='userProfile') document.getElementById('nav-user').classList.replace('text-gray-400', 'text-pink-500');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 3, 8);
+        
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
 
-        app.innerHTML = ''; app.scrollTop = 0;
-        setTimeout(() => { if(views[view]) { app.innerHTML=views[view](data); if(view==='arScreen') init3DPet(data); } }, 10);
+        // Iluminación mejorada
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const spotLight = new THREE.SpotLight(0xffffff, 1);
+        spotLight.position.set(5, 10, 5);
+        scene.add(spotLight);
+
+        // Geometría del animal (Voxel Style)
+        const petGroup = new THREE.Group();
+        const material = new THREE.MeshPhongMaterial({ color: pet.color3D, shininess: 30 });
+        
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 3), material);
+        body.position.y = 1.5;
+        petGroup.add(body);
+
+        const head = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), material);
+        head.position.set(0, 2.5, 1.8);
+        petGroup.add(head);
+
+        // Piernas
+        const legGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+        for(let i=0; i<4; i++) {
+            const leg = new THREE.Mesh(legGeo, material);
+            leg.position.set(i<2?0.6:-0.6, 0.75, i%2===0?1.1:-1.1);
+            petGroup.add(leg);
+        }
+
+        petGroup.scale.set(pet.escala3D, pet.escala3D, pet.escala3D);
+        scene.add(petGroup);
+
+        // Referencia de suelo (Regla de Realidad Aumentada)
+        const ruler = new THREE.Mesh(new THREE.BoxGeometry(4, 0.1, 0.5), new THREE.MeshBasicMaterial({ color: 0xffcc00 }));
+        ruler.position.set(0, 0, 0);
+        scene.add(ruler);
+
+        function animate() {
+            currentAnimationId = requestAnimationFrame(animate);
+            petGroup.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
     }
+
+    function enviarSolicitud(petId) {
+    if(!db.usuario.adopcionesActivas.find(a => a.idMascota === petId)) {
+        db.usuario.adopcionesActivas.push({ 
+            idMascota: petId, 
+            fecha: new Date().toLocaleDateString(),
+            estado: "Validación de Perfil" 
+        });
+    }
+    
+    db.usuario.chats[petId] = [];
+
+    navigate('chatScreen', petId);
+}
 
     window.onload = () => navigate('loginScreen');
 </script>
