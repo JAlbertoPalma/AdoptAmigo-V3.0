@@ -578,6 +578,82 @@
         </button>
     </div>`,
 
+    adoptionVoucherScreen: (petId) => {
+    const pet = db.mascotas.find(p => p.id === petId);
+    return `
+    <div class="fade-in h-full bg-gray-100 overflow-y-auto p-6 pb-12">
+        <button onclick="navigate('finalSuccessScreen', ${petId})" class="mb-4 text-gray-500 font-bold text-xs flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> VOLVER AL ÉXITO
+        </button>
+
+        <div class="bg-white shadow-2xl rounded-sm p-8 border-t-[10px] border-[#ff4b91] relative overflow-hidden">
+            <div class="absolute inset-0 opacity-[0.03] flex items-center justify-center pointer-events-none">
+                <i class="fas fa-paw text-[250px] -rotate-12"></i>
+            </div>
+
+            <div class="text-center mb-8 relative">
+                <h1 class="text-xl font-black text-gray-900 tracking-tighter uppercase">Certificado de Adopción</h1>
+                <p class="text-[10px] font-bold text-[#ff4b91] tracking-[0.3em]">ADOPTAMIGO MÉXICO</p>
+                <div class="w-12 h-1 bg-gray-200 mx-auto mt-4"></div>
+            </div>
+
+            <div class="space-y-6 relative text-[11px] leading-relaxed text-gray-700">
+                <p>Por medio del presente documento, se hace constar que el ciudadano 
+                <b class="text-gray-900 underline">${db.usuario.nombre.toUpperCase()}</b>, 
+                con identidad verificada mediante plataforma digital, ha completado satisfactoriamente el proceso de adopción de:</p>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex items-center">
+                    <img src="${pet.foto}" class="w-16 h-16 rounded-lg object-cover mr-4 shadow-sm">
+                    <div>
+                        <p class="font-black text-gray-900 text-sm">${pet.nombre.toUpperCase()}</p>
+                        <p class="text-[9px] text-gray-500 uppercase">${pet.especie} • ID: #AD-${pet.id}2026</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <p><b class="text-gray-900">CLÁUSULAS DE RESPONSABILIDAD:</b></p>
+                    <ul class="list-disc pl-4 space-y-2 italic">
+                        <li>El adoptante se compromete a brindar refugio, alimento y atención médica veterinaria.</li>
+                        <li>Queda estrictamente prohibido el abandono o maltrato del ejemplar.</li>
+                        <li>El refugio <b>${pet.refugio}</b> podrá realizar visitas de seguimiento aleatorias.</li>
+                    </ul>
+                </div>
+
+                <div class="grid grid-cols-2 gap-8 pt-10 text-center">
+                    <div>
+                        <div class="border-b border-gray-300 mb-2 h-10 flex items-end justify-center">
+                            <span class="font-serif italic text-lg text-blue-900 opacity-70">${db.usuario.nombre.split(' ')[0]}</span>
+                        </div>
+                        <p class="text-[8px] font-bold uppercase text-gray-400">Firma del Adoptante</p>
+                    </div>
+                    <div>
+                        <div class="border-b border-gray-300 mb-2 h-10 flex items-end justify-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Jon_Kirsch_Signature.png" class="h-8 opacity-60 grayscale">
+                        </div>
+                        <p class="text-[8px] font-bold uppercase text-gray-400">Firma Autorizada</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center pt-6">
+                    <div class="text-center">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=VERIFIED-ADOPTION-${pet.id}" class="w-12 h-12 mx-auto mb-2 opacity-50">
+                        <p class="text-[7px] font-bold text-gray-300 uppercase tracking-widest">Documento Verificado Digitalmente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 space-y-3">
+            <button onclick="window.print()" class="w-full py-4 btn-primary text-white rounded-2xl font-black text-sm shadow-xl">
+                <i class="fas fa-download mr-2"></i> DESCARGAR PDF
+            </button>
+            <button onclick="navigate('searchScreen')" class="w-full py-4 bg-white text-gray-400 rounded-2xl font-black text-sm border border-gray-200">
+                FINALIZAR PROCESO
+            </button>
+        </div>
+    </div>`;
+},
+
     finalSuccessScreen: (petId) => {
     const pet = db.mascotas.find(p => p.id === petId);
     return `
@@ -644,8 +720,8 @@
             </div>
 
             <div class="space-y-3">
-                <button class="w-full py-4 bg-gray-100 text-gray-900 rounded-2xl font-extrabold text-sm flex items-center justify-center">
-                    <i class="fas fa-file-pdf mr-2"></i> Descargar Comprobante de Adopción
+                <button onclick="navigate('adoptionVoucherScreen', ${petId})" class="w-full py-4 bg-gray-100 text-gray-900 rounded-2xl font-extrabold text-sm flex items-center justify-center transition active:scale-95">
+                    <i class="fas fa-file-contract mr-2 text-[#ff4b91]"></i> GENERAR COMPROBANTE DE ADOPCIÓN
                 </button>
                 <button onclick="navigate('searchScreen')" class="w-full btn-primary text-white py-5 rounded-2xl font-extrabold shadow-xl">
                     Volver al Inicio
