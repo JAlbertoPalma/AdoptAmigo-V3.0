@@ -28,6 +28,7 @@
             overflow: hidden; position: relative; 
             border: 10px solid #1a1a1a; 
         }
+        
         #app-content { height: 100%; overflow-y: auto; padding-bottom: 90px; scroll-behavior: smooth; }
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -66,6 +67,25 @@
         </div>
     </div>
 
+    <div id="qr-overlay" class="hidden absolute inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-center justify-center p-10 fade-in">
+    <div class="bg-white rounded-[40px] p-8 w-full text-center shadow-2xl relative">
+        <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-20 h-20 bg-[#ff4b91] rounded-3xl flex items-center justify-center text-white shadow-xl rotate-12">
+            <i class="fas fa-qrcode text-4xl -rotate-12"></i>
+        </div>
+        
+        <h3 class="text-gray-900 font-black text-xl mt-8 mb-2">Pase de Entrega</h3>
+        <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-8">Presenta este código en ventanilla</p>
+        
+        <div class="bg-gray-50 p-6 rounded-[32px] mb-8 border border-gray-100">
+             <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ADOPTAMIGO-SUCCESS" class="w-48 h-48 mx-auto mix-blend-multiply">
+        </div>
+        
+        <button onclick="toggleQR(false)" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm transition active:scale-95">
+            ENTENDIDO
+        </button>
+    </div>
+</div>
+
     <div id="app-content" class="hide-scrollbar"></div>
 
     <div id="bottom-nav" class="hidden absolute bottom-0 w-full glass-nav flex justify-around py-5 px-6 pb-8 text-gray-400 z-50 rounded-t-[30px]">
@@ -82,16 +102,20 @@
             nombre: "Ricardo López", 
             correo: "usuario@ejemplo.com", 
             foto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ77JAIz7LbMSooZVDp4ni_rDT4M0p35wwJg&s", 
+            bio: "Apasionado por el bienestar animal y los paseos al aire libre. Busco un compañero para aventuras de fin de semana.",
+            ubicación: "Ciudad Obregón, Sonora",
+
+            adopcionesRealizadas: 1,
+            horasVoluntariado: 15,
+            donacionesRealizadas: 0,
             presupuesto: "$1,500 - $2,500 MXN",
             mascotasActuales: "1 (Gato)",
             tiempoSolo: "4-6 horas",
-            adopcionesRealizadas: 0,
             estiloHogar: "Casa con Patio",
-            nivelActividad: "Alto",
             energiaBusqueda: "Media",
-            actividadFavorita: "Paseos tranquilos",
-            personalidadIdeal: "Cariñosa",
-            espacioDisponible: "Pequeño/Medio",
+            verificadoID: true,
+            verificadoDomicilio: true,
+            verificadoReferencia: false,
             adopcionesActivas: [],
             chats: {}
         },
@@ -288,6 +312,11 @@
                         </div>
                     </div>
 
+                    <div class="mb-8">
+                        <h3 class="text-lg font-extrabold text-gray-900 mb-3 font-jakarta">Fecha de publicación</h3>
+                        <p class="text-gray-500 leading-relaxed text-sm font-medium">05 de Febrero de 2026</p>
+                    </div>
+
                     <div class="flex space-x-4">
                         <button onclick="rechazarMascota(${pet.id})" class="w-20 h-16 bg-gray-100 rounded-2xl text-gray-400 flex items-center justify-center transition active:scale-90"><i class="fas fa-times text-2xl"></i></button>
                         <button onclick="navigate('adoptionFormScreen', ${pet.id})" class="flex-1 btn-primary text-white font-extrabold rounded-2xl shadow-xl transition active:scale-95">ADOPTAR AHORA</button>
@@ -357,6 +386,12 @@
                             <p class="text-sm font-medium text-gray-600 italic">¡Hola! He recibido tu solicitud para adoptar a ${pet.nombre}. Revisaré tu perfil y te contactaré pronto.</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="flex justify-center my-6">
+                    <button onclick="navigate('finalSuccessScreen', ${petId})" class="bg-green-500 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase shadow-lg animate-pulse">
+                        ¡Adopción Aprobada! Haz clic aquí
+                    </button>
                 </div>
 
                 <div class="p-6 pb-10 bg-white">
@@ -432,6 +467,12 @@
                                 <div class="absolute left-[-22px] h-4 w-4 rounded-full bg-white border-4 border-[#ff4b91] animate-pulse"></div>
                                 <span class="text-xs font-extrabold text-gray-900">Validación de Perfil IA</span>
                             </div>
+                            <div class="relative flex items-center">
+                            <div class="absolute left-[-22px] h-4 w-4 rounded-full bg-green-500 flex items-center justify-center">
+                                <i class="fas fa-check text-[8px] text-white"></i>
+                            </div>
+                            <span class="text-xs font-extrabold text-gray-900">¡Adopción Finalizada con éxito!</span>
+                        </div>
                         </div>
                     </div>`
                 }).join('') : `
@@ -442,50 +483,177 @@
             </div>`,
 
         userProfile: () => `
-    <div class="fade-in pt-20 px-8 pb-10 bg-white min-h-full">
-        <div class="flex items-center space-x-4 mb-8">
-            <img src="${db.usuario.foto}" class="w-16 h-16 rounded-2xl object-cover shadow-lg">
-            <div>
-                <h2 class="text-xl font-extrabold text-gray-900">${db.usuario.nombre}</h2>
-                <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Nivel Pro Adoptante</p>
+    <div class="fade-in pt-16 px-6 pb-24 bg-gray-50 min-h-full">
+        <div class="bg-white rounded-[32px] p-6 shadow-sm mb-6 text-center border border-gray-100">
+            <div class="relative inline-block mb-4">
+                <img src="${db.usuario.foto}" class="w-24 h-24 rounded-[32px] object-cover ring-4 ring-pink-50 mx-auto">
+                <div class="absolute -right-1 -bottom-1 w-8 h-8 bg-blue-500 rounded-xl flex items-center justify-center text-white border-4 border-white shadow-lg">
+                    <i class="fas fa-certificate text-[10px]"></i>
+                </div>
+            </div>
+            <h2 class="text-2xl font-black text-gray-900 leading-tight">${db.usuario.nombre}</h2>
+            <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-4"><i class="fas fa-location-dot mr-1"></i> ${db.usuario.ubicación}</p>
+            <p class="text-xs text-gray-500 font-medium leading-relaxed px-4">${db.usuario.bio}</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="bg-white p-3 rounded-2xl text-center shadow-sm border border-gray-100">
+                <p class="text-lg font-black text-[#ff4b91]">${db.usuario.adopcionesRealizadas}</p>
+                <p class="text-[8px] font-bold text-gray-400 uppercase">Mascotas adoptadas</p>
+            </div>
+            <div class="bg-white p-3 rounded-2xl text-center shadow-sm border border-gray-100">
+                <p class="text-lg font-black text-blue-500">${db.usuario.donacionesRealizadas}</p>
+                <p class="text-[8px] font-bold text-gray-400 uppercase">Mascotas puestas en adopción</p>
             </div>
         </div>
 
-        <div class="space-y-6">
-            <div class="bg-gray-900 rounded-[32px] p-6 text-white shadow-2xl relative overflow-hidden">
-                <div class="absolute right-0 top-0 p-4 opacity-10 text-5xl"><i class="fas fa-bolt"></i></div>
-                <h3 class="text-[10px] font-extrabold text-[#ff4b91] uppercase tracking-[0.2em] mb-4">Busco una mascota...</h3>
-                
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center border-b border-white/10 pb-2">
-                        <span class="text-xs text-gray-400">Energía:</span>
-                        <span class="text-xs font-bold">${db.usuario.energiaBusqueda}</span>
+        <div class="bg-white rounded-[32px] p-6 shadow-sm mb-6 border border-gray-100">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Análisis de Convivencia (IA)</h3>
+                <button onclick="navigate('userForm')" class="text-[10px] font-black text-[#ff4b91] uppercase tracking-widest bg-pink-50 px-3 py-1 rounded-lg">
+                    <i class="fas fa-pen-to-square mr-1"></i> Editar
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
+                    <div class="flex items-center">
+                        <i class="fas fa-home-user text-[#ff4b91] mr-3"></i>
+                        <span class="text-xs font-bold text-gray-600">Entorno:</span>
                     </div>
-                    <div class="flex justify-between items-center border-b border-white/10 pb-2">
-                        <span class="text-xs text-gray-400">Actividad:</span>
-                        <span class="text-xs font-bold">${db.usuario.actividadFavorita}</span>
+                    <span class="text-xs font-black text-gray-900">${db.usuario.estiloHogar}</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
+                    <div class="flex items-center">
+                        <i class="fas fa-bolt text-yellow-500 mr-3"></i>
+                        <span class="text-xs font-bold text-gray-600">Nivel Energía:</span>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-400">Carácter:</span>
-                        <span class="text-xs font-bold">${db.usuario.personalidadIdeal}</span>
+                    <span class="text-xs font-black text-gray-900">${db.usuario.energiaBusqueda}</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
+                    <div class="flex items-center">
+                        <i class="fas fa-hourglass-half text-blue-400 mr-3"></i>
+                        <span class="text-xs font-bold text-gray-600">Tiempo Solo:</span>
                     </div>
+                    <span class="text-xs font-black text-gray-900">${db.usuario.tiempoSolo}</span>
                 </div>
             </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-gray-50 p-4 rounded-3xl border border-gray-100">
-                    <p class="text-[10px] font-extrabold text-gray-400 uppercase">Hogar</p>
-                    <p class="text-xs font-bold text-gray-900">${db.usuario.estiloHogar}</p>
-                </div>
-                <div class="bg-gray-50 p-4 rounded-3xl border border-gray-100">
-                    <p class="text-[10px] font-extrabold text-gray-400 uppercase">Presupuesto</p>
-                    <p class="text-xs font-bold text-gray-900">${db.usuario.presupuesto}</p>
-                </div>
-            </div>
-
-            <button onclick="navigate('loginScreen')" class="w-full py-5 rounded-2xl font-extrabold text-red-500 bg-red-50 transition active:scale-95">Cerrar Sesión</button>
         </div>
+
+        <div class="bg-gray-900 rounded-[32px] p-6 shadow-xl mb-6 text-white">
+            <h3 class="text-[10px] font-black text-[#ff4b91] uppercase tracking-widest mb-5">Seguridad y Confianza</h3>
+            <div class="grid grid-cols-1 gap-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mr-3">
+                            <i class="fas fa-id-card text-xs"></i>
+                        </div>
+                        <span class="text-xs font-medium">Identificación Oficial</span>
+                    </div>
+                    <i class="fas ${db.usuario.verificadoID ? 'fa-circle-check text-green-400' : 'fa-circle-xmark text-gray-600'}"></i>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mr-3">
+                            <i class="fas fa-file-invoice text-xs"></i>
+                        </div>
+                        <span class="text-xs font-medium">Comprobante Domicilio</span>
+                    </div>
+                    <i class="fas ${db.usuario.verificadoDomicilio ? 'fa-circle-check text-green-400' : 'fa-circle-xmark text-gray-600'}"></i>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mr-3">
+                            <i class="fas fa-users text-xs"></i>
+                        </div>
+                        <span class="text-xs font-medium">Referencia Personal</span>
+                    </div>
+                    <i class="fas ${db.usuario.verificadoReferencia ? 'fa-circle-check text-green-400' : 'fa-circle-xmark text-gray-600'}"></i>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="navigate('loginScreen')" class="w-full py-5 rounded-2xl font-black text-red-500 bg-red-50 border border-red-100 transition active:scale-95">
+            Cerrar Sesión Segura
+        </button>
     </div>`,
+
+    finalSuccessScreen: (petId) => {
+    const pet = db.mascotas.find(p => p.id === petId);
+    return `
+    <div class="fade-in h-full bg-white overflow-y-auto hide-scrollbar pb-10">
+        <div class="relative h-64 bg-gradient-to-br from-[#ff4b91] to-[#ff7676] flex flex-col items-center justify-center text-white p-8">
+            <div class="absolute inset-0 opacity-20" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
+            <div class="w-20 h-20 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center mb-4 border border-white/30">
+                <i class="fas fa-check-circle text-4xl animate-bounce"></i>
+            </div>
+            <h1 class="text-3xl font-black tracking-tighter">¡FELICIDADES!</h1>
+            <p class="text-sm font-bold opacity-90 uppercase tracking-widest text-center mt-1">${pet.nombre} ya es parte de tu familia</p>
+        </div>
+
+        <div class="px-8 -mt-8 relative z-10">
+            <div class="bg-gray-900 rounded-[32px] p-6 shadow-2xl text-white mb-8 border border-white/10">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <p class="text-[9px] font-black text-[#ff4b91] uppercase tracking-widest">Certificado Oficial</p>
+                        <h3 class="text-xl font-extrabold italic">#ADOPT-${pet.id}2026</h3>
+                    </div>
+                    <img src="${pet.foto}" class="w-16 h-16 rounded-2xl object-cover border-2 border-[#ff4b91]">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-[11px] mb-6">
+                    <div>
+                        <p class="text-gray-500 font-bold uppercase">Propietario</p>
+                        <p class="font-bold">${db.usuario.nombre}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 font-bold uppercase">Fecha de Unión</p>
+                        <p class="font-bold">${new Date().toLocaleDateString()}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl flex items-center justify-between">
+                    <div class="pr-4">
+                        <p class="text-gray-400 text-[9px] font-black uppercase mb-1">Código de Entrega</p>
+                        <p class="text-gray-900 text-[10px] font-medium leading-tight">Toca el icono para ampliar tu pase.</p>
+                    </div>
+                    <button onclick="toggleQR(true)" class="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-100 transition active:scale-90 hover:bg-gray-100">
+                        <i class="fas fa-qrcode text-3xl text-gray-900"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-sm font-extrabold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-list-check mr-2 text-[#ff4b91]"></i> Preparativos para ${pet.nombre}
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <input type="checkbox" checked class="w-5 h-5 accent-[#ff4b91] rounded-lg">
+                        <span class="ml-4 text-xs font-bold text-gray-600">Firma de contrato digital</span>
+                    </div>
+                    <div class="flex items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <input type="checkbox" class="w-5 h-5 accent-[#ff4b91]">
+                        <span class="ml-4 text-xs font-bold text-gray-600">Comprar alimento (Etapa: ${pet.especie === 'Perro' ? 'Adulto' : 'Cachorro'})</span>
+                    </div>
+                    <div class="flex items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <input type="checkbox" class="w-5 h-5 accent-[#ff4b91]">
+                        <span class="ml-4 text-xs font-bold text-gray-600">Preparar zona de descanso</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button class="w-full py-4 bg-gray-100 text-gray-900 rounded-2xl font-extrabold text-sm flex items-center justify-center">
+                    <i class="fas fa-file-pdf mr-2"></i> Descargar Comprobante de Adopción
+                </button>
+                <button onclick="navigate('searchScreen')" class="w-full btn-primary text-white py-5 rounded-2xl font-extrabold shadow-xl">
+                    Volver al Inicio
+                </button>
+            </div>
+        </div>
+    </div>`;
+},
     };
 
     /**************************************************************
@@ -610,6 +778,17 @@
     db.usuario.chats[petId] = [];
 
     navigate('chatScreen', petId);
+    }
+
+    function toggleQR(show) {
+    const modal = document.getElementById('qr-overlay');
+    if(show) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 }
 
     window.onload = () => navigate('loginScreen');
